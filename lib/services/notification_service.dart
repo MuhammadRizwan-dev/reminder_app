@@ -7,6 +7,17 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   static Future<void> init() async {
     tz.initializeTimeZones();
+
+    final androidImplementation = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+      await androidImplementation.requestExactAlarmsPermission();
+    }
+
     const AndroidInitializationSettings android = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -31,11 +42,15 @@ class NotificationService {
       tz.TZDateTime.from(scheduledDate, tz.local),
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'reminder_channel_v1',
-          'Reminders',
+          'reminder_channel_v2',
+          'High Priority Reminders',
           importance: Importance.max,
-          priority: Priority.high,enableVibration: true,
-          playSound: true
+          priority: Priority.high,
+          enableVibration: true,
+          playSound: true,
+          channelShowBadge: true,
+          fullScreenIntent: true,
+          category: AndroidNotificationCategory.reminder,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -45,11 +60,15 @@ class NotificationService {
   static Future<void> showInstantNotification(String title, String msg) async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'reminder_channel_v1',
-          'Reminders',
-          importance: Importance.high,
-          priority: Priority.high,playSound: true,
+          'reminder_channel_v4',
+          'Urgent Reminders',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
           enableVibration: true,
+          channelShowBadge: true,
+          fullScreenIntent: true,
+          category: AndroidNotificationCategory.reminder,
         );
 
     const NotificationDetails details = NotificationDetails(
