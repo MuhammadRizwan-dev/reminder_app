@@ -33,14 +33,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Halka sa grey background modern lagta hai
+      backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- TOP PURPLE CONTAINER ---
             Container(
               width: double.infinity,
-              padding: EdgeInsets.only(top: 60.h, left: 20.w, right: 20.w, bottom: 50.h),
+              padding: EdgeInsets.only(
+                top: 60.h,
+                left: 20.w,
+                right: 20.w,
+                bottom: 50.h,
+              ),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Colors.deepPurple, Colors.purpleAccent],
@@ -55,7 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Welcome!", style: TextStyle(color: Colors.white70, fontSize: 16.sp)),
+                  Text(
+                    "Welcome!",
+                    style: TextStyle(color: Colors.white70, fontSize: 16.sp),
+                  ),
                   SizedBox(height: 5.h),
                   Text(
                     "My Reminders",
@@ -68,15 +75,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-
-            // --- INPUT FORM (TRANSFORMED TO OVERLAP) ---
             Transform.translate(
-              offset: Offset(0, -30.h), // Ye form ko purple ke upar move karega
+              offset: Offset(0, -30.h),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Card(
                   elevation: 5,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
                   child: Padding(
                     padding: EdgeInsets.all(16.w),
                     child: Form(
@@ -85,22 +92,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           TextFormField(
                             controller: reminderController,
-                            validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                            validator: (value) => value == null || value.isEmpty
+                                ? "Required"
+                                : null,
                             decoration: InputDecoration(
                               labelText: "What to remind?",
                               prefixIcon: Icon(Icons.alarm, size: 22.sp),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
                             ),
                           ),
                           SizedBox(height: 12.h),
                           TextFormField(
                             controller: dateController,
                             readOnly: true,
-                            validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                            validator: (value) => value == null || value.isEmpty
+                                ? "Required"
+                                : null,
                             decoration: InputDecoration(
                               labelText: "Select Date",
-                              prefixIcon: Icon(Icons.calendar_today, size: 22.sp),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),
+                              prefixIcon: Icon(
+                                Icons.calendar_today,
+                                size: 22.sp,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
                             ),
                             onTap: () async {
                               DateTime? date = await showDatePicker(
@@ -112,7 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (date != null) {
                                 setState(() {
                                   selectedDate = date;
-                                  dateController.text = "${date.day}-${date.month}-${date.year}";
+                                  dateController.text =
+                                      "${date.day}-${date.month}-${date.year}";
                                 });
                               }
                             },
@@ -121,11 +140,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextFormField(
                             controller: timeController,
                             readOnly: true,
-                            validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                            validator: (value) => value == null || value.isEmpty
+                                ? "Required"
+                                : null,
                             decoration: InputDecoration(
                               labelText: "Select Time",
-                              prefixIcon: Icon(CupertinoIcons.time, size: 22.sp),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),
+                              prefixIcon: Icon(
+                                CupertinoIcons.time,
+                                size: 22.sp,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
                             ),
                             onTap: () async {
                               TimeOfDay? time = await showTimePicker(
@@ -148,17 +174,42 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.deepPurple,
                                 foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
                               ),
                               onPressed: () {
-                                if (_formKey.currentState!.validate() && selectedDate != null && selectedTime != null) {
-                                  final finalTime = DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day, selectedTime!.hour, selectedTime!.minute);
+                                if (_formKey.currentState!.validate() &&
+                                    selectedDate != null &&
+                                    selectedTime != null) {
+                                  final finalTime = DateTime(
+                                    selectedDate!.year,
+                                    selectedDate!.month,
+                                    selectedDate!.day,
+                                    selectedTime!.hour,
+                                    selectedTime!.minute,
+                                  );
 
-                                  NotificationService.showInstantNotification("Reminder Set", "Title: ${reminderController.text}");
-                                  NotificationService.scheduleNotification(DateTime.now().millisecond, "Reminder", reminderController.text, finalTime);
+                                  NotificationService.showInstantNotification(
+                                    "Reminder Set",
+                                    "Title: ${reminderController.text}",
+                                  );
+                                  NotificationService.scheduleNotification(
+                                    DateTime.now().millisecond,
+                                    "Reminder",
+                                    reminderController.text,
+                                    finalTime,
+                                  );
 
                                   setState(() {
-                                    reminderList.add(Reminder(title: reminderController.text, date: dateController.text, time: timeController.text));
+                                    reminderList.add(
+                                      Reminder(
+                                        id: DateTime.now().toString(),
+                                        title: reminderController.text,
+                                        date: dateController.text,
+                                        time: timeController.text,
+                                      ),
+                                    );
                                   });
 
                                   reminderController.clear();
@@ -168,7 +219,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   selectedTime = null;
                                 }
                               },
-                              child: Text("Set Reminder", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                "Set Reminder",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -178,38 +235,108 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-
-            // --- LIST SECTION ---
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Scheduled Tasks", style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.black87)),
+                  Text(
+                    "Scheduled Tasks",
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
                   SizedBox(height: 10.h),
                   reminderList.isEmpty
-                      ? Center(child: Text("No reminders yet", style: TextStyle(color: Colors.grey, fontSize: 14.sp)))
-                      : ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: reminderList.length,
-                    itemBuilder: (context, index) {
-                      final reminder = reminderList[index];
-                      return Card(
-                        margin: EdgeInsets.only(bottom: 10.h),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.deepPurple.withOpacity(0.1),
-                            child: Icon(Icons.notifications_active, color: Colors.deepPurple, size: 20.sp),
+                      ? Center(
+                          child: Text(
+                            "No reminders yet",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14.sp,
+                            ),
                           ),
-                          title: Text(reminder.title, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
-                          subtitle: Text("${reminder.date} | ${reminder.time}", style: TextStyle(fontSize: 12.sp)),
+                        )
+                      : ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: reminderList.length,
+                          itemBuilder: (context, index) {
+                            final reminder = reminderList[index];
+                            return Dismissible(
+                              key: Key(reminderList[index].id),
+                              direction: DismissDirection.endToStart,
+                              background: Container(
+                                alignment: Alignment.centerRight,
+                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                margin: EdgeInsets.only(bottom: 10.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(15.r),
+                                ),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              onDismissed: (direction) {
+                                setState(() {
+                                  reminderList.removeAt(index);
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("${reminder.title} deleted"),
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                );
+                              },
+
+                              child: Card(
+                                margin: EdgeInsets.only(bottom: 10.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.r),
+                                ),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.deepPurple
+                                        .withOpacity(0.1),
+                                    child: Icon(
+                                      Icons.notifications_active,
+                                      color: Colors.deepPurple,
+                                      size: 20.sp,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    reminder.title,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "${reminder.date} | ${reminder.time}",
+                                    style: TextStyle(fontSize: 12.sp),
+                                  ),
+                                  trailing: IconButton(
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.grey,
+                                      size: 20.sp,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        reminderList.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                   SizedBox(height: 20.h),
                 ],
               ),
