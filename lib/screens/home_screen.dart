@@ -301,8 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundColor: Colors.deepPurple
-                                        .withOpacity(0.1),
+                                    backgroundColor: Colors.deepPurple.withValues(alpha: 0.1),
                                     child: Icon(
                                       Icons.notifications_active,
                                       color: Colors.deepPurple,
