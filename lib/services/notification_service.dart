@@ -1,10 +1,12 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'dart:typed_data';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
   static Future<void> init() async {
     tz.initializeTimeZones();
 
@@ -35,19 +37,27 @@ class NotificationService {
     String body,
     DateTime scheduledDate,
   ) async {
+    var tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
+    final now = tz.TZDateTime.now(tz.local);
+
+    if (tzDate.isBefore(now)) {
+      tzDate = tzDate.add(const Duration(days: 1));
+    }
+
     await _plugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.from(scheduledDate, tz.local),
-      const NotificationDetails(
+      tzDate,
+      NotificationDetails(
         android: AndroidNotificationDetails(
-          'reminder_channel_v2',
+          'reminder_channel_v20',
           'High Priority Reminders',
           importance: Importance.max,
           priority: Priority.high,
           enableVibration: true,
           playSound: true,
+          vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
           channelShowBadge: true,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.reminder,
@@ -58,20 +68,21 @@ class NotificationService {
   }
 
   static Future<void> showInstantNotification(String title, String msg) async {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'reminder_channel_v4',
+          'reminder_channel_v21',
           'Urgent Reminders',
           importance: Importance.max,
           priority: Priority.high,
           playSound: true,
           enableVibration: true,
+          vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
           channelShowBadge: true,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.reminder,
         );
 
-    const NotificationDetails details = NotificationDetails(
+    final NotificationDetails details = NotificationDetails(
       android: androidDetails,
     );
 
