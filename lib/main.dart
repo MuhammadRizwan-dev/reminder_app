@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:reminder_app/screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'tools/notification_service.dart';
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return const MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: HomeScreen(),
+          home: SplashScreen(),
         );
       },
     );
