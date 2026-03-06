@@ -20,9 +20,7 @@ class NotificationService {
       await androidImplementation.requestExactAlarmsPermission();
     }
 
-    const AndroidInitializationSettings android = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+    const AndroidInitializationSettings android = AndroidInitializationSettings('launcher_icon');
 
     const InitializationSettings settings = InitializationSettings(
       android: android,

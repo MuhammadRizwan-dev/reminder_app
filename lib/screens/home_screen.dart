@@ -22,7 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Reminder> reminderList = [];
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-
+  static const Color premiumGold = Color(0xFFD4AF37);
+  static const Color premiumBlack = Color(0xFF1A1A1A);
+  static const Color lightCream = Color(0xFFF5F5F0);
   void _loadData() async {
     final data = await DatabaseHelper.instance.fetchReminders();
     setState(() {
@@ -56,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: lightCream,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -70,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Colors.deepPurple, Colors.purpleAccent],
+                  colors: [premiumBlack, Color(0xFF333333)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -84,13 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     "Welcome!",
-                    style: TextStyle(color: Colors.white70, fontSize: 16.sp),
+                    style: TextStyle(color: premiumGold, fontSize: 16.sp),
                   ),
                   SizedBox(height: 5.h),
                   Text(
                     "My Reminders",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: premiumGold,
                       fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
@@ -114,14 +116,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           TextFormField(
-                            controller: reminderController,
+                            controller: reminderController,cursorColor: premiumGold,
                             validator: (value) => value == null || value.isEmpty
                                 ? "Required"
                                 : null,
                             decoration: InputDecoration(
                               labelText: "What to remind?",
-                              prefixIcon: Icon(Icons.alarm, size: 22.sp),
+                              labelStyle: TextStyle(color: premiumBlack.withOpacity(0.6)),
+                              prefixIcon: Icon(Icons.alarm,color: premiumGold, size: 22.sp),
                               border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: premiumGold, width: 2),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                             ),
@@ -129,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 12.h),
                           TextFormField(
                             controller: dateController,
+                            cursorColor: premiumGold,
                             readOnly: true,
                             validator: (value) => value == null || value.isEmpty
                                 ? "Required"
@@ -136,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: InputDecoration(
                               labelText: "Select Date",
                               prefixIcon: Icon(
-                                Icons.calendar_today,
+                                Icons.calendar_today,color: premiumGold,
                                 size: 22.sp,
                               ),
                               border: OutlineInputBorder(
@@ -162,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 12.h),
                           TextFormField(
                             controller: timeController,
+                            cursorColor: premiumGold,
                             readOnly: true,
                             validator: (value) => value == null || value.isEmpty
                                 ? "Required"
@@ -169,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: InputDecoration(
                               labelText: "Select Time",
                               prefixIcon: Icon(
-                                CupertinoIcons.time,
+                                CupertinoIcons.time,color: premiumGold,
                                 size: 22.sp,
                               ),
                               border: OutlineInputBorder(
@@ -195,10 +208,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 48.h,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
-                                foregroundColor: Colors.white,
+                                backgroundColor: premiumBlack,
+                                foregroundColor: premiumGold,
+                                elevation: 4,
+                                shadowColor: premiumGold.withValues(alpha: 0.3),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.r),
+                                  side: BorderSide(color: premiumGold, width: 0.5),
                                 ),
                               ),
                               onPressed: () async {
@@ -229,16 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     finalTime,
                                   );
                                   _loadData();
-                                  // setState(() {
-                                  //   reminderList.add(
-                                  //     Reminder(
-                                  //       id: DateTime.now().toString(),
-                                  //       title: reminderController.text,
-                                  //       date: dateController.text,
-                                  //       time: timeController.text,
-                                  //     ),
-                                  //   );
-                                  // });
 
                                   reminderController.clear();
                                   dateController.clear();
@@ -327,17 +333,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
 
                               child: Card(
+                                elevation: 0,
                                 margin: EdgeInsets.only(bottom: 10.h),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.r),
+                                  side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
                                 ),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundColor: Colors.deepPurple
+                                    backgroundColor: premiumGold
                                         .withValues(alpha: 0.1),
                                     child: Icon(
                                       Icons.notifications_active,
-                                      color: Colors.deepPurple,
+                                      color: premiumGold,
                                       size: 20.sp,
                                     ),
                                   ),
