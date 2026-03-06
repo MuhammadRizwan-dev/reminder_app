@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../models/reminder_model.dart';
-import '../services/notification_service.dart';
+import '../tools/database_helper.dart';
+import '../tools/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +22,28 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Reminder> reminderList = [];
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+
+  void _loadData() async {
+    final data = await DatabaseHelper.instance.fetchReminders();
+    setState(() {
+      reminderList = data
+          .map(
+            (item) => Reminder(
+              id: item['id'],
+              title: item['title'],
+              date: item['date'],
+              time: item['time'] ?? "",
+            ),
+          )
+          .toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
 
   @override
   void dispose() {
@@ -178,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate() &&
                                     selectedDate != null &&
                                     selectedTime != null) {
@@ -189,28 +212,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                     selectedTime!.hour,
                                     selectedTime!.minute,
                                   );
-
+                                  int id = await DatabaseHelper.instance
+                                      .insertReminder(
+                                        reminderController.text,
+                                        dateController.text,
+                                        timeController.text,
+                                      );
                                   NotificationService.showInstantNotification(
                                     "Reminder Set",
                                     "Title: ${reminderController.text}",
                                   );
                                   NotificationService.scheduleNotification(
-                                    DateTime.now().millisecond,
+                                    id,
                                     "Reminder",
                                     reminderController.text,
                                     finalTime,
                                   );
-
-                                  setState(() {
-                                    reminderList.add(
-                                      Reminder(
-                                        id: DateTime.now().toString(),
-                                        title: reminderController.text,
-                                        date: dateController.text,
-                                        time: timeController.text,
-                                      ),
-                                    );
-                                  });
+                                  _loadData();
+                                  // setState(() {
+                                  //   reminderList.add(
+                                  //     Reminder(
+                                  //       id: DateTime.now().toString(),
+                                  //       title: reminderController.text,
+                                  //       date: dateController.text,
+                                  //       time: timeController.text,
+                                  //     ),
+                                  //   );
+                                  // });
 
                                   reminderController.clear();
                                   dateController.clear();
@@ -267,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             final reminder = reminderList[index];
                             return Dismissible(
-                              key: Key(reminderList[index].id),
+                              key: Key(reminderList[index].id.toString()),
                               direction: DismissDirection.endToStart,
                               background: Container(
                                 alignment: Alignment.centerRight,
@@ -282,13 +310,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.white,
                                 ),
                               ),
-                              onDismissed: (direction) {
-                                setState(() {
-                                  reminderList.removeAt(index);
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
+                              onDismissed: (direction) async {
+                                final messenger = ScaffoldMessenger.of(context);
+                                final reminderTitle = reminder.title;
+                                await DatabaseHelper.instance.deleteReminder(
+                                  reminder.id,
+                                );
+                                if (!mounted) return;
+                                _loadData();
+                                messenger.showSnackBar(
                                   SnackBar(
-                                    content: Text("${reminder.title} deleted"),
+                                    content: Text("$reminderTitle deleted"),
                                     backgroundColor: Colors.redAccent,
                                   ),
                                 );
@@ -301,7 +333,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundColor: Colors.deepPurple.withValues(alpha: 0.1),
+                                    backgroundColor: Colors.deepPurple
+                                        .withValues(alpha: 0.1),
                                     child: Icon(
                                       Icons.notifications_active,
                                       color: Colors.deepPurple,
@@ -325,7 +358,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       color: Colors.grey,
                                       size: 20.sp,
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await DatabaseHelper.instance
+                                          .deleteReminder(reminder.id);
+                                      _loadData();
                                       setState(() {
                                         reminderList.removeAt(index);
                                       });
