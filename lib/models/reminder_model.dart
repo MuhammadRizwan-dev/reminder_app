@@ -10,4 +10,20 @@ class Reminder {
     required this.date,
     required this.time,
   });
+  factory Reminder.fromMap(Map<String, dynamic> map) {
+    return Reminder(
+      id: map['id'],
+      title: map['title'],
+      date: map['date'],
+      time: map['time'] ?? "",
+    );
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'date': date,
+      'time': time,
+    };
+  }
 }

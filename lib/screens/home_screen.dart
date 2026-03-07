@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../models/reminder_model.dart';
 import '../tools/database_helper.dart';
@@ -28,16 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _loadData() async {
     final data = await DatabaseHelper.instance.fetchReminders();
     setState(() {
-      reminderList = data
-          .map(
-            (item) => Reminder(
-              id: item['id'],
-              title: item['title'],
-              date: item['date'],
-              time: item['time'] ?? "",
-            ),
-          )
-          .toList();
+      reminderList = data.map((item) => Reminder.fromMap(item)).toList();
     });
   }
 
@@ -45,8 +37,22 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _requestNotificationPermissions();
   }
 
+  Future<void> _requestNotificationPermissions() async {
+    final notificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    // 1. Android 13+ ke liye Notification Permission
+    await notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+
+    // 2. Exact Alarms ke liye permission (taake reminder miss na ho)
+    await notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestExactAlarmsPermission();
+  }
   @override
   void dispose() {
     reminderController.dispose();
@@ -122,10 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : null,
                             decoration: InputDecoration(
                               labelText: "What to remind?",
-                              labelStyle: TextStyle(color: premiumBlack.withOpacity(0.6)),
+                              labelStyle: TextStyle(color: premiumBlack.withValues(alpha: 0.6)),
                               prefixIcon: Icon(Icons.alarm,color: premiumGold, size: 22.sp),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(12.r),borderSide: BorderSide(color: premiumBlack)
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: premiumGold, width: 2),
@@ -337,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 margin: EdgeInsets.only(bottom: 10.h),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.r),
-                                  side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
+                                  side: BorderSide(color: Colors.grey.withValues(alpha: 0.2), width: 1),
                                 ),
                                 child: ListTile(
                                   leading: CircleAvatar(

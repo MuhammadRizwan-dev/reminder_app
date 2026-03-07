@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'home_screen.dart';
 
@@ -8,17 +9,43 @@ class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-
-class _SplashScreenState extends State<SplashScreen> {
-  bool showTextLogo = false;
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) setState(() => showTextLogo = true);
-    });
-    Future.delayed(const Duration(milliseconds: 4000), () {
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800), // Thora slow aur smooth
+    );
+
+    _scaleAnimation = CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOutBack)
+    );
+
+    _fadeAnimation = CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeIn)
+    );
+
+    _slideAnimation = Tween<Offset>(
+        begin: const Offset(0, 0.5),
+        end: Offset.zero
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.5, 1.0, curve: Curves.easeOutCubic),
+    ));
+
+    _controller.forward();
+
+    // Home transition logic same rahegi
+    Future.delayed(const Duration(milliseconds: 3000), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -36,23 +63,44 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFC1B3A3),
+      backgroundColor: const Color(0xFF1A1A1A),
       body: Center(
-        child: Stack(
-          alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/appIcon/appIcon.jpg',
-              width: 180.w,
-              fit: BoxFit.contain,
+            // Icon with Glow and Scale
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFD4AF37).withOpacity(0.2),
+                      blurRadius: 40,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Image.asset('assets/appIcon/appIcon.png', width: 140.w),
+              ),
             ),
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 1000),
-              opacity: showTextLogo ? 1.0 : 0.0,
-              child: Image.asset(
-                'assets/images/reminder_app_start_page.jpg',
-                width: 350.w,
-                fit: BoxFit.cover,
+            SizedBox(height: 30.h),
+            // Text with Slide and Fade
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Text(
+                  "REMIND",
+                  style: TextStyle(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 10, // Wider spacing looks more expensive
+                    color: const Color(0xFFD4AF37),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
               ),
             ),
           ],
