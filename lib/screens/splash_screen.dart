@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800), // Thora slow aur smooth
+      duration: const Duration(milliseconds: 1800),
     );
 
     _scaleAnimation = CurvedAnimation(
@@ -43,8 +43,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     ));
 
     _controller.forward();
-
-    // Home transition logic same rahegi
     Future.delayed(const Duration(milliseconds: 3000), () {
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -68,7 +66,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon with Glow and Scale
             ScaleTransition(
               scale: _scaleAnimation,
               child: Container(
@@ -86,7 +83,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
             ),
             SizedBox(height: 30.h),
-            // Text with Slide and Fade
             FadeTransition(
               opacity: _fadeAnimation,
               child: SlideTransition(
@@ -96,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   style: TextStyle(
                     fontSize: 26.sp,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 10, // Wider spacing looks more expensive
+                    letterSpacing: 10,
                     color: const Color(0xFFD4AF37),
                     fontFamily: 'Poppins',
                   ),
