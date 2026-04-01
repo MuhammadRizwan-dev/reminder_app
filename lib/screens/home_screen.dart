@@ -43,12 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _requestNotificationPermissions() async {
     final notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-    // 1. Android 13+ ke liye Notification Permission
     await notificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
 
-    // 2. Exact Alarms ke liye permission (taake reminder miss na ho)
     await notificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestExactAlarmsPermission();
